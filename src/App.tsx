@@ -1,8 +1,11 @@
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
-import { Shell } from "./components";
+import { Router } from "./Router";
 
 export default function App() {
-  return <MantineProvider theme={theme}><Shell/></MantineProvider>;
+  return (
+    <MantineProvider theme={theme}>
+      <Router/>
+    </MantineProvider>);
 }
