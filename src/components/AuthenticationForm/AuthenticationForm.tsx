@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -6,22 +7,25 @@ import {
   Text,
   Paper,
   Group,
-  // PaperProps,
+  PaperProps,
   Button,
   Divider,
   Checkbox,
   Anchor,
   Stack,
 } from '@mantine/core';
+import { useAuth } from '../../context/AuthProvider';
 import { GoogleButton } from './GoogleButton';
 // import { GitHubButton } from './GitHubButton';
 
-type Props = {
-  handler: (event: React.FormEvent<HTMLFormElement>) => void
-};
-
-export function AuthenticationForm(props: Props) {
+export function AuthenticationForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
+
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
   const form = useForm({
     initialValues: {
       email: '',
@@ -35,6 +39,17 @@ export function AuthenticationForm(props: Props) {
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
   });
+
+  function handleSubmit(values: {
+    email: string;
+    name: string;
+    password: string;
+    terms: boolean;
+  }) {
+    auth.signin(values.name, () => {
+      navigate(from, { replace: true });
+    });
+  }
 
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
@@ -60,7 +75,7 @@ export function AuthenticationForm(props: Props) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(props.handler)}>
+      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Stack>
           {type === 'register' && (
             <TextInput
