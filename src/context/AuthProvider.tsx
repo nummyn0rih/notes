@@ -1,8 +1,9 @@
 import { ReactNode, createContext, useContext, useState } from 'react';
 import {
-  useNavigate,
+  // useNavigate,
   useLocation,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { fakeAuthProvider } from "./auth";
 
@@ -15,7 +16,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>(null!);
 
-function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
 
@@ -64,7 +65,7 @@ export function useAuth() {
 //   );
 // }
 
-function RequireAuth({ children }: { children: JSX.Element }) {
+export function RequireAuth({ children }) {
   const auth = useAuth();
   const location = useLocation();
 
@@ -76,5 +77,5 @@ function RequireAuth({ children }: { children: JSX.Element }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return children;
+  return children ? children : <Outlet />;
 }
