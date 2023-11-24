@@ -10,34 +10,27 @@ const router = createBrowserRouter([
     id: "root",
     path: "/",
     Component: Layout,
-    errorElement: <NotFound />,
+    errorElement: <NotFound/>,
     children: [
       {
-        index: true,
-        Component: RequireAuth,
-        // children: [
+        path: "/",
+        element: <RequireAuth/>,
+        children: [
+          {
+            path: "/",
+            element: <Shell/>,
+            children: [
 
-        // ]
+            ]
+          }
+        ]
       },
       {
         path: "login",
         Component: LoginPage,
       },
-    //   {
-    //     path: "protected",
-    //     loader: protectedLoader,
-    //     Component: ProtectedPage,
-    //   },
     ],
   },
-  // {
-  //   path: "/logout",
-  //   async action() {
-  //     // We signout in a "resource route" that we can hit from a fetcher.Form
-  //     await fakeAuthProvider.signout();
-  //     return redirect("/");
-  //   },
-  // },
 ]);
 
 export function Router() {
