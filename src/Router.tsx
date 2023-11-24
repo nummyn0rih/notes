@@ -1,26 +1,29 @@
 // import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './layout/Layout';
-import { NotFound, Shell } from './components';
 import { LoginPage } from './pages/LoginPage';
 import { RequireAuth } from './context/AuthProvider';
+import { NotFound, Shell } from './components';
 
 const router = createBrowserRouter([
   {
     id: "root",
     path: "/",
     Component: Layout,
-    errorElement: <NotFound/>,
+    errorElement: <NotFound />,
     children: [
       {
         path: "/",
-        element: <RequireAuth/>,
+        element: <RequireAuth />,
         children: [
           {
             path: "/",
-            element: <Shell/>,
+            element: <Shell />,
             children: [
-
+              {
+                path: "notes/:id",
+                // element: <Note />,
+              }
             ]
           }
         ]
