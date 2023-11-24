@@ -5,36 +5,50 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { fakeAuthProvider } from "./auth";
+import { firebaseAuthProvider } from "./auth";
+
+export interface User {
+  email: string;
+  password: string;
+  name?: string;
+  terms?: boolean;
+}
 
 interface AuthContextType {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
-  signin: (user: string, callback: VoidFunction) => void;
+  user: User;
+  signin: (user: User, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
 }
 
 const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  const signin = (newUser: string, callback: VoidFunction) => {
-    return fakeAuthProvider.signin(() => {
+  const signup = (newUser: User, callback: VoidFunction) => {
+    console.log(newUser)
+    return firebaseAuthProvider.signup(newUser, () => {
+      setUser(newUser);
+      callback();
+    });
+  };
+
+  const signin = (newUser: User, callback: VoidFunction) => {
+    console.log(newUser)
+    return firebaseAuthProvider.signin(newUser, () => {
       setUser(newUser);
       callback();
     });
   };
 
   const signout = (callback: VoidFunction) => {
-    return fakeAuthProvider.signout(() => {
+    return firebaseAuthProvider.signout(() => {
       setUser(null);
       callback();
     });
   };
 
-  const value = { user, signin, signout };
+  const value = { user, signup, signin, signout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

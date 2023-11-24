@@ -14,7 +14,7 @@ import {
   Anchor,
   Stack,
 } from '@mantine/core';
-import { useAuth } from '../../context/AuthProvider';
+import { useAuth, User } from '../../context/AuthProvider';
 import { GoogleButton } from './GoogleButton';
 // import { GitHubButton } from './GitHubButton';
 
@@ -40,13 +40,8 @@ export function AuthenticationForm(props: PaperProps) {
     },
   });
 
-  function handleSubmit(values: {
-    email: string;
-    name: string;
-    password: string;
-    terms: boolean;
-  }) {
-    auth.signin(values.name, () => {
+  function handleSubmit(values: User) {
+    auth.signin(values, () => {
       navigate(from, { replace: true });
     });
   }
