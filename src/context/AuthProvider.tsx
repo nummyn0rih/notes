@@ -16,6 +16,7 @@ export interface User {
 
 interface AuthContextType {
   user: User;
+  signup: (user: User, callback: VoidFunction) => void;
   signin: (user: User, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
 }
@@ -26,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   const signup = (newUser: User, callback: VoidFunction) => {
-    console.log(newUser)
     return firebaseAuthProvider.signup(newUser, () => {
       setUser(newUser);
       callback();
@@ -34,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signin = (newUser: User, callback: VoidFunction) => {
-    console.log(newUser)
     return firebaseAuthProvider.signin(newUser, () => {
       setUser(newUser);
       callback();
@@ -50,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = { user, signup, signin, signout };
 
+  // @ts-ignore
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -80,7 +80,7 @@ export function useAuth() {
 //   );
 // }
 
-export function RequireAuth({ children }: { children?: JSX.Element }) {
+export function RequireAuth({ children }: { children?: ReactNode }) {
   const auth = useAuth();
   const location = useLocation();
 

@@ -41,9 +41,17 @@ export function AuthenticationForm(props: PaperProps) {
   });
 
   function handleSubmit(values: User) {
-    auth.signin(values, () => {
-      navigate(from, { replace: true });
-    });
+    if (type === 'login') {
+      auth.signin(values, () => {
+        navigate(from, { replace: true });
+      });
+    }
+
+    if (type === 'register') {
+      auth.signup(values, () => {
+        navigate(from, { replace: true });
+      });
+    }
   }
 
   return (
