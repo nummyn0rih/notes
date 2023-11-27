@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { User } from './AuthProvider';
 import { auth } from '../firebase';
 
@@ -48,8 +48,13 @@ const firebaseAuthProvider = {
   },
 
   signout(callback: VoidFunction) {
-    firebaseAuthProvider.isAuthenticated = false;
-    setTimeout(callback, 100);
+    signOut(auth).then(() => {
+      console.log('singout OK!')
+      firebaseAuthProvider.isAuthenticated = false;
+      setTimeout(callback, 100);
+    }).catch((error) => {
+      console.log(error)
+    });
   },
 };
 
