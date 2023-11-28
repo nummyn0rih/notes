@@ -15,7 +15,13 @@ export function Header() {
   return (
     <Group>
       <p>{auth.user.email}</p>
-      <Button radius="xl" onClick={handleSubmit}>Sign out</Button>
+      <Button 
+        onClick={handleSubmit}
+        radius="xl"
+        variant="gradient"
+        aria-label="Gradient action icon"
+        gradient={{ from: 'cyan', to: 'blue', deg: 45 }}
+      >Sign out</Button>
     </Group>
   )
 }
