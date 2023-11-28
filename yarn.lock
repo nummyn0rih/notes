@@ -853,18 +853,18 @@
   resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.12.0.tgz"
   integrity sha512-2hXv036Bux90e1GXTWSMfNzfDDK8LA8JYEWfyHxzvwdp6GyoWEovKc9cotb3KCKmkdwsIBuFGX7ScTWyiHv7Eg==
 
-"@tabler/icons-react@^2.29.0":
-  version "2.41.0"
-  resolved "https://registry.npmjs.org/@tabler/icons-react/-/icons-react-2.41.0.tgz"
-  integrity sha512-y99lqtgxsJs7VQubVtd9XN3h8sVSuAzWI8J1CJxBOAQeLHU6Ybyfbg8O0G+w0Ub8ZKS27mfn5yHli+YPfmXhiQ==
+"@tabler/icons-react@^2.29.0", "@tabler/icons-react@^2.42.0":
+  version "2.42.0"
+  resolved "https://registry.npmjs.org/@tabler/icons-react/-/icons-react-2.42.0.tgz"
+  integrity sha512-2APr++u24P2mx9vJymJQJORRpu2Qej0rPrtAvgXu8YomHjLXVP+O1VtToSGyoSPH1ysA569XbxrwzOau9Ne12A==
   dependencies:
-    "@tabler/icons" "2.41.0"
+    "@tabler/icons" "2.42.0"
     prop-types "^15.7.2"
 
-"@tabler/icons@2.41.0":
-  version "2.41.0"
-  resolved "https://registry.npmjs.org/@tabler/icons/-/icons-2.41.0.tgz"
-  integrity sha512-n7a4Qx/Narn4thV/FxnWb0GoOSGdFTA5ZRLuvgshXn3YxwP0Z7KLzgQ5tQs1gpwdNF5f+HI3dhVTfv/ZG6Zahw==
+"@tabler/icons@2.42.0":
+  version "2.42.0"
+  resolved "https://registry.npmjs.org/@tabler/icons/-/icons-2.42.0.tgz"
+  integrity sha512-ynV4iaC1c1mUhuAr9HRaoq8KrWYmZ0bJEpOh7qTBE+OfdDsdvQUe+0S7FW+DHkJ4RuxQMdO8djrZK7HrUw9YMA==
 
 "@types/babel__core@^7.20.4":
   version "7.20.5"
