@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './layout/Layout';
 import { LoginPage } from './pages/LoginPage';
 import { RequireAuth } from './context/AuthProvider';
-import { NotFound, Shell } from './components';
+import { Note, NotFound, Shell } from './components';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "notes/:id",
-                // element: <Note />,
+                element: <Note />,
               }
             ]
           }
