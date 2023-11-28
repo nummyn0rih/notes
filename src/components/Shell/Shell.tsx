@@ -3,8 +3,13 @@ import { useDisclosure } from '@mantine/hooks';
 import { AppShell, ScrollArea, Burger, Group, Skeleton, Card, Text } from '@mantine/core';
 import { Header } from '../Header';
 
+import data from '../../data.json';
+
+
 export function Shell() {
   const [opened, { toggle }] = useDisclosure();
+
+  console.log(data)
 
   return (
     <AppShell
@@ -25,12 +30,11 @@ export function Shell() {
           scrollbarSize={10}
           scrollHideDelay={500}
         >
-          {Array(25)
-            .fill(0)
-            .map((_, index) => (
-              // <Skeleton key={index} h={28} mt="sm" />
+          {data.notes
+            .map((note) => (
+              // <Skeleton key={note.id} h={28} mt="sm" />
               <Card
-                key={index}
+                key={note.id}
                 withBorder
                 px={15}
                 py={10}
@@ -39,12 +43,8 @@ export function Shell() {
                 component="a"
                 href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               >
-                <Text>
-                  You&apos;ve won a million dollars in cash!
-                </Text>
-                <Text c="dimmed" size="sm">
-                  Please click anywhere on this card to claim your reward, this is not a fraud, trust us
-                </Text>
+                <Text>{note.name}</Text>
+                <Text c="dimmed" size="sm">{note.date}</Text>
               </Card>
           ))}
         </ScrollArea>
