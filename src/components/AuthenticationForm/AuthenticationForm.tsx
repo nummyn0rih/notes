@@ -40,15 +40,15 @@ export function AuthenticationForm(props: PaperProps) {
     },
   });
 
-  function handleSubmit(values: User) {
+  function handleSubmit({ email, password }: User) {
     if (type === 'login') {
-      auth.signin(values, () => {
+      auth.signin(email, password, () => {
         navigate(from, { replace: true });
       });
     }
 
     if (type === 'register') {
-      auth.signup(values, () => {
+      auth.signup(email, password, () => {
         navigate(from, { replace: true });
       });
     }

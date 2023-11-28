@@ -5,7 +5,13 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { firebaseAuthProvider } from "./auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  User as FirebaseUser
+} from "firebase/auth";
+import { auth } from '../firebase';
 
 export interface User {
   email: string;
@@ -16,35 +22,55 @@ export interface User {
 
 interface AuthContextType {
   user: User;
-  signup: (user: User, callback: VoidFunction) => void;
-  signin: (user: User, callback: VoidFunction) => void;
+  signup: (email: string, password: string, callback: VoidFunction) => void;
+  signin: (email: string, password: string, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
 }
 
 const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
 
-  const signup = (newUser: User, callback: VoidFunction) => {
-    return firebaseAuthProvider.signup(newUser, () => {
-      setUser(newUser);
-      callback();
-    });
+  const signup = (email: string, password: string, callback: VoidFunction) => {
+    return createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log('user === ', user);
+        setUser(user)
+        callback();
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+      });
   };
 
-  const signin = (newUser: User, callback: VoidFunction) => {
-    return firebaseAuthProvider.signin(newUser, () => {
-      setUser(newUser);
-      callback();
-    });
+  const signin = (email: string, password: string, callback: VoidFunction) => {
+    return signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log('user === ', user)
+        setUser(user);
+        callback();
+      })
+      .catch((error): void => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+      });
   };
 
   const signout = (callback: VoidFunction) => {
-    return firebaseAuthProvider.signout(() => {
-      setUser(null);
-      callback();
-    });
+    return signOut(auth)
+      .then(() => {
+        console.log('singout OK!')
+        setUser(null);
+        callback();
+      }).catch((error) => {
+        console.log(error)
+      });
   };
 
   const value = { user, signup, signin, signout };
@@ -56,6 +82,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
+}
+
+export function RequireAuth({ children }: { children?: ReactNode }) {
+  const auth = useAuth();
+  const location = useLocation();
+
+  if (!auth.user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children ? children : <Outlet />;
 }
 
 // function AuthStatus() {
@@ -79,14 +116,3 @@ export function useAuth() {
 //     </p>
 //   );
 // }
-
-export function RequireAuth({ children }: { children?: ReactNode }) {
-  const auth = useAuth();
-  const location = useLocation();
-
-  if (!auth.user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  return children ? children : <Outlet />;
-}
