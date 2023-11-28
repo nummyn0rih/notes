@@ -21,7 +21,7 @@ export interface User {
 }
 
 interface AuthContextType {
-  user: User;
+  user: FirebaseUser;
   signup: (email: string, password: string, callback: VoidFunction) => void;
   signin: (email: string, password: string, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;

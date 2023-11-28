@@ -1,7 +1,7 @@
 import { useDisclosure } from '@mantine/hooks';
 import { AppShell, ScrollArea, Burger, Group, Skeleton } from '@mantine/core';
-import { MantineLogo } from '@mantine/ds';
 import { Outlet } from 'react-router-dom';
+import { Header } from '../Header';
 
 export function Shell() {
   const [opened, { toggle }] = useDisclosure();
@@ -13,9 +13,9 @@ export function Shell() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
+        <Group h="100%" px="md" justify="flex-end">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <MantineLogo size={30} />
+          <Header />
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
