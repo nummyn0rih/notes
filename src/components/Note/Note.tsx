@@ -1,7 +1,7 @@
 import { Button, Group, Text, Paper } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
 
-export function Shell() {
+export function Note() {
   
 
   return (
