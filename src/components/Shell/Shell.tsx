@@ -70,6 +70,17 @@ export function Shell() {
           scrollbarSize={10}
           scrollHideDelay={500}
         >
+          <Card
+            withBorder
+            px={15}
+            py={10}
+            mb="xs"
+            shadow="sm"
+            component="a"
+            // onClick={handleClick(note.id)}
+          >
+            <Text>Добавить новую заметку</Text>
+          </Card>
           {
             notes.length !== 0 ? (
               notes.map((note) => (
