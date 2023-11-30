@@ -1,17 +1,14 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, useContext } from 'react';
+import { useLocation, Navigate, Outlet, } from "react-router-dom";
 import {
-  // useNavigate,
-  useLocation,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  User as FirebaseUser
-} from "firebase/auth";
+  useAuthState,
+  useCreateUserWithEmailAndPassword,
+  useSignInWithEmailAndPassword,
+  useSignOut
+} from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
+import { Center, Loader } from '@mantine/core';
+import { NotFound } from '../components';
 
 export interface User {
   email: string;
@@ -21,7 +18,6 @@ export interface User {
 }
 
 interface AuthContextType {
-  user: FirebaseUser;
   signup: (email: string, password: string, callback: VoidFunction) => void;
   signin: (email: string, password: string, callback: VoidFunction) => void;
   signout: (callback: VoidFunction) => void;
@@ -30,52 +26,27 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-
+  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  const [signOut] = useSignOut(auth);
+  
   const signup = (email: string, password: string, callback: VoidFunction) => {
-    return createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log('user === ', user);
-        setUser(user)
-        callback();
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage)
-      });
+    createUserWithEmailAndPassword(email, password);
+    callback();
   };
 
   const signin = (email: string, password: string, callback: VoidFunction) => {
-    return signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log('user === ', user)
-        setUser(user);
-        callback();
-      })
-      .catch((error): void => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage)
-      });
+    signInWithEmailAndPassword(email, password);
+    callback();
   };
 
-  const signout = (callback: VoidFunction) => {
-    return signOut(auth)
-      .then(() => {
-        console.log('singout OK!')
-        setUser(null);
-        callback();
-      }).catch((error) => {
-        console.log(error)
-      });
+  const signout = async (callback: VoidFunction) => {
+    signOut();
+    callback();
   };
 
-  const value = { user, signup, signin, signout };
+  const value = { signup, signin, signout };
 
-  // @ts-ignore
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -85,34 +56,23 @@ export function useAuth() {
 }
 
 export function RequireAuth({ children }: { children?: ReactNode }) {
-  const auth = useAuth();
+  const [user, loading, error] = useAuthState(auth);
   const location = useLocation();
 
-  if (!auth.user) {
+  if (loading) {
+    return (
+      <Center style={{height: "100vh"}}>
+        <Loader color="blue" size="xl" type="dots"/>
+      </Center>);
+  }
+
+  if (error) {
+    return <NotFound/>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children ? children : <Outlet />;
 }
-
-// function AuthStatus() {
-//   const auth = useAuth();
-//   const navigate = useNavigate();
-
-//   if (!auth.user) {
-//     return <p>You are not logged in.</p>;
-//   }
-
-//   return (
-//     <p>
-//       Welcome {auth.user}!{" "}
-//       <button
-//         onClick={() => {
-//           auth.signout(() => navigate("/"));
-//         }}
-//       >
-//         Sign out
-//       </button>
-//     </p>
-//   );
-// }
