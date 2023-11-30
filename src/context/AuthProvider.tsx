@@ -55,8 +55,13 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuthStateUser() {
+  return useAuthState(auth);
+}
+
 export function RequireAuth({ children }: { children?: ReactNode }) {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading, error] = useAuthStateUser();
   const location = useLocation();
 
   if (loading) {

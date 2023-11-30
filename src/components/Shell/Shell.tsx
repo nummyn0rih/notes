@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { collection, getDocs } from "firebase/firestore";
+import { useAuthStateUser } from '../../context/AuthProvider';
+import { db } from '../../firebase';
 import { useDisclosure } from '@mantine/hooks';
 import { AppShell, ScrollArea, Burger, Group, Skeleton, Card, Text } from '@mantine/core';
 import { Header } from '../Header';
-
-import { collection, getDocs } from "firebase/firestore"; 
-import { db } from '../../firebase';
-import { useAuth } from '../../context/AuthProvider';
 
 interface Note {
   id: string;
@@ -22,11 +21,11 @@ interface Note {
 
 export function Shell() {
   const [opened, { toggle }] = useDisclosure();
+  const [user] = useAuthStateUser();
   const [notes, setNotes] = useState<Note[] | []>([]);
   const navigate = useNavigate();
-  const auth = useAuth();
 
-  const uid = auth.user.uid;
+  const uid = user!.uid;
 
   const fetchData = useCallback(async () => {
     const querySnapshot = await getDocs(collection(db, "users", uid, "notes"));

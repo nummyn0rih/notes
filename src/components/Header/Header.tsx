@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Group } from '@mantine/core';
-import { useAuth } from '../../context/AuthProvider';
+import { useAuth, useAuthStateUser } from '../../context/AuthProvider';
 
 export function Header() {
+  const [user] = useAuthStateUser();
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -14,7 +15,7 @@ export function Header() {
 
   return (
     <Group>
-      <p>{auth.user.email}</p>
+      <p>{user!.email}</p>
       <Button 
         onClick={handleSubmit}
         radius="xl"
