@@ -1,54 +1,25 @@
-import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { addDoc, collection, getDocs, Timestamp } from "firebase/firestore";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { useAuthStateUser } from '../../context/AuthProvider';
 import { db } from '../../firebase';
 import { useDisclosure } from '@mantine/hooks';
 import { AppShell, ScrollArea, Burger, Group, Skeleton, Card, Text,Button } from '@mantine/core';
 import { Header } from '../Header';
 
-interface Note {
-  id: string;
-  data: {
-    header: string,
-    text: string,
-    changed: {
-      nanoseconds: number,
-      seconds: number
-    }
-  }
-}
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 export function Shell() {
   const [opened, { toggle }] = useDisclosure();
-  const [user] = useAuthStateUser();
-  const [notes, setNotes] = useState<Note[] | []>([]);
   const navigate = useNavigate();
-
+  const [user] = useAuthStateUser();
   const uid = user!.uid;
 
-  const fetchData = useCallback(async () => {
-    const querySnapshot = await getDocs(collection(db, "users", uid, "notes"));
-    const data: Note[] = [];
+  const [values, loading, error] = useCollection(collection(db, 'users', uid, 'notes'));
+  console.log('values === ', values)
 
-    querySnapshot.forEach((doc) => {
-      const note = { id: doc.id, data: doc.data() } as Note;
-      data.push(note);
-    });
-
-    setNotes(data);
-  }, [uid])
-
-  useEffect(() => {
-    fetchData()
-      .catch(console.error);
-  }, [fetchData])
-  
   const handleClick = (id: string) => () => {
     navigate(`/notes/${id}`);
   };
-
-  console.log(notes)
 
   const handleAddNewNote = async () => {
     const note = {
@@ -95,29 +66,28 @@ export function Shell() {
           >
             Добавить новую заметку
           </Button>
-          {
-            notes.length !== 0 ? (
-              notes.map((note) => (
-                <Card
-                  key={note.id}
-                  withBorder
-                  px={15}
-                  py={10}
-                  mt="xs"
-                  shadow="sm"
-                  component="a"
-                  onClick={handleClick(note.id)}
-                >
-                  <Text>{note.data.header}</Text>
-                  <Text c="dimmed" size="sm">{new Date(note.data.changed.nanoseconds).toLocaleString()}</Text>
-                </Card>
-              ))) : (
-                Array(15)
-                  .fill(0)
-                  .map((_, index) => (
-                    <Skeleton key={index} h={28} mt="sm" animate={false} />
-                  ))
-              )
+
+          {error && <strong>Error: {JSON.stringify(error)}</strong>}
+          {loading && Array(10)
+            .fill(0)
+            .map((_, index) => (
+              <Skeleton key={index} h={65} mt="sm" animate={false} />
+          ))}
+          {values && values.docs.map((doc) => (
+            <Card
+              key={doc.id}
+              withBorder
+              px={15}
+              py={10}
+              mt="xs"
+              shadow="sm"
+              component="a"
+              onClick={handleClick(doc.id)}
+            >
+              <Text>{JSON.stringify(doc.data().header)}</Text>
+              <Text c="dimmed" size="sm">{new Date(JSON.stringify(doc.data().changed.nanoseconds)).toLocaleString()}</Text>
+            </Card>
+          ))
           }
         </ScrollArea>
       </AppShell.Navbar>
