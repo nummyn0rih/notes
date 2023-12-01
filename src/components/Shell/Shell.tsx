@@ -13,9 +13,7 @@ export function Shell() {
   const navigate = useNavigate();
   const [user] = useAuthStateUser();
   const uid = user!.uid;
-
   const [values, loading, error] = useCollection(collection(db, 'users', uid, 'notes'));
-  console.log('values === ', values)
 
   const handleClick = (id: string) => () => {
     navigate(`/notes/${id}`);
@@ -84,7 +82,7 @@ export function Shell() {
               component="a"
               onClick={handleClick(doc.id)}
             >
-              <Text>{JSON.stringify(doc.data().header)}</Text>
+              <Text truncate="end" maw={300}>{JSON.stringify(doc.data().header)}</Text>
               <Text c="dimmed" size="sm">{new Date(JSON.stringify(doc.data().changed.nanoseconds)).toLocaleString()}</Text>
             </Card>
           ))
