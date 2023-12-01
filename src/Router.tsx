@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './layout/Layout';
 import { LoginPage } from './pages/LoginPage';
 import { RequireAuth } from './context/AuthProvider';
-import { Note, NotFound, Shell } from './components';
+import { Note, NotFound, Shell, EditNote } from './components';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +26,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "notes/:id/edit",
-                // element: <EditNote />,
+                element: <EditNote />,
               },
             ]
           }
