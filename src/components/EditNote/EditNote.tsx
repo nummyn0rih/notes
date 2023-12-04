@@ -68,8 +68,7 @@ export function EditNote() {
           <Textarea autosize maxRows={1} onChange={handleChange} value={noteHeader} size="xl" id='noteHeader' />
           <Textarea autosize minRows={30} onChange={handleChange} value={noteText} id='noteText' />
         </Stack>
-      )
-      }
+      )}
     </Paper>
   )
 }
