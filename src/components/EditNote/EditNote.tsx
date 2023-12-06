@@ -5,7 +5,7 @@ import { db } from '../../firebase';
 import { useAuthStateUser } from '../../context/AuthProvider';
 
 import { Center, Loader, Paper, Stack, Textarea } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function EditNote() {
   const { id } = useParams();
@@ -13,17 +13,13 @@ export function EditNote() {
   const uid = user!.uid;
   const [value, loading, error] = useDocument(doc(collection(db, 'users', uid, 'notes'), id));
 
-  const [noteHeader, setNoteHeader] = useState(JSON.stringify(value?.data()!.header));
-  const [noteText, setNoteText] = useState(JSON.stringify(value?.data()!.text) || '');
-  // console.log('id => ', id, 'uid => ', uid)
+  const [noteHeader, setNoteHeader] = useState('');
+  const [noteText, setNoteText] = useState('');
 
-
-  if (value) {
-    // console.log(JSON.stringify(value.data()))
-  }
-
-  // JSON.stringify(value.data()!.header)
-  // JSON.stringify(value.data()!.text)
+  useEffect(() => {
+    setNoteHeader(value?.data()!.header);
+    setNoteText(value?.data()!.text)
+  }, [value])
 
   async function update(note) {
     try {
@@ -41,7 +37,7 @@ export function EditNote() {
     const note = {
       header: id === 'noteHeader' ? e.target.value : noteHeader,
       text: id === 'noteText' ? e.target.value : noteText,
-      changed: Timestamp.fromDate(new Date())
+      changed: Timestamp.now()
     };
 
     if (id === 'noteHeader') {
@@ -57,7 +53,7 @@ export function EditNote() {
 
   return (
     <Paper shadow="sm" p="xl">
-      {error && <strong>Error: {JSON.stringify(error)}</strong>}
+      {error && <strong>Error: {error.message}</strong>}
       {loading && (
         <Center style={{height: "100%"}}>
           <Loader color="blue" size="xl" type="dots"/>

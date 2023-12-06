@@ -13,18 +13,18 @@ export function Note() {
   const uid = user!.uid;
   const [value, loading, error] = useDocument(doc(collection(db, 'users', uid, 'notes'), id));
 
-
   const handleChange = () => {
     navigate(`/notes/${id}/edit`);
   };
 
   const handleDelete = async () => {
+    navigate(`/`);
     await deleteDoc(doc(db, 'users', uid, 'notes', id as string));
   }
 
   return (
     <Paper shadow="sm" p="xl">
-      {error && <strong>Error: {JSON.stringify(error)}</strong>}
+      {error && <strong>Error: {error.message}</strong>}
       {loading && (
         <Center style={{height: "100%"}}>
           <Loader color="blue" size="xl" type="dots"/>
@@ -54,9 +54,9 @@ export function Note() {
               Удалить
             </Button>
           </Group>
-          <Text size="xl">{JSON.stringify(value?.data()!.header)}</Text>
+          <Text size="xl">{value?.data()!.header}</Text>
           <Divider my="md" />
-          <Text>{JSON.stringify(value?.data()!.text)}</Text>
+          <Text>{value?.data()!.text}</Text>
         </>
       )}
     </Paper>
