@@ -3,11 +3,15 @@ import { doc, deleteDoc, collection } from "firebase/firestore";
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase';
 import { useAuthStateUser } from '../../context/AuthProvider';
-import { Divider, Button, Center, Group, Loader, Text, Paper } from '@mantine/core';
+import { Divider, Modal, Button, Center, Group, Loader, Text, Paper } from '@mantine/core';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
 
 export function Note() {
   const navigate = useNavigate();
+  const [opened, { open, close }] = useDisclosure(false);
+  const isMobile = useMediaQuery('(max-width: 50em)');
+
   const { id } = useParams();
   const [user] = useAuthStateUser();
   const uid = user!.uid;
@@ -30,6 +34,29 @@ export function Note() {
           <Loader color="blue" size="xl" type="dots"/>
         </Center>
       )}
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Подтвердите удаление заметки"
+        centered
+        size="xs"
+        fullScreen={isMobile}
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+        transitionProps={{ transition: 'fade', duration: 450, timingFunction: 'linear' }}
+      >
+        <Center>
+          <Button 
+            leftSection={<IconTrash size={20} />}
+            radius="xl"
+            variant="gradient"
+            aria-label="Gradient action icon"
+            gradient={{ from: 'yellow', to: 'pink', deg: 45 }}
+            onClick={handleDelete}
+            >
+              Удалить
+        </Button>
+        </Center>
+      </Modal>
       {value && (
         <>
           <Group justify="space-between" mb={20}>
@@ -49,7 +76,7 @@ export function Note() {
               variant="gradient"
               aria-label="Gradient action icon"
               gradient={{ from: 'yellow', to: 'pink', deg: 45 }}
-              onClick={handleDelete}
+              onClick={open}
               >
               Удалить
             </Button>
