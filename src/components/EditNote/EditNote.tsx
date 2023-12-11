@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, collection, setDoc, Timestamp } from "firebase/firestore";
 import { useDocument } from 'react-firebase-hooks/firestore';
@@ -5,9 +6,10 @@ import { db } from '../../firebase';
 import { useAuthStateUser } from '../../context/AuthProvider';
 
 import { Center, Loader, Paper, Stack, Textarea } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { useFocusTrap } from '@mantine/hooks';
 
 export function EditNote() {
+  const focusTrapRef = useFocusTrap();
   const { id } = useParams();
   const [user] = useAuthStateUser();
   const uid = user!.uid;
@@ -61,7 +63,7 @@ export function EditNote() {
       )}
       {value && (
         <Stack>
-          <Textarea autosize maxRows={1} onChange={handleChange} value={noteHeader} size="xl" id='noteHeader' />
+          <Textarea autosize maxRows={1} onChange={handleChange} value={noteHeader} size="xl" id='noteHeader' ref={focusTrapRef} />
           <Textarea autosize minRows={30} onChange={handleChange} value={noteText} id='noteText' />
         </Stack>
       )}

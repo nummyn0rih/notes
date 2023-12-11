@@ -6,6 +6,7 @@ import { useAuthStateUser } from '../../context/AuthProvider';
 import { Divider, Modal, Button, Center, Group, Loader, Text, Paper } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
+import { marked } from 'marked';
 
 export function Note() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export function Note() {
         overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
         transitionProps={{ transition: 'fade', duration: 450, timingFunction: 'linear' }}
       >
-        <Center>
+        <Center mt={10}>
           <Button 
             leftSection={<IconTrash size={20} />}
             radius="xl"
@@ -83,7 +84,7 @@ export function Note() {
           </Group>
           <Text size="xl">{value?.data()!.header}</Text>
           <Divider my="md" />
-          <Text>{value?.data()!.text}</Text>
+          <div dangerouslySetInnerHTML={{__html: marked.parse(value?.data()!.text)}} />
         </>
       )}
     </Paper>
