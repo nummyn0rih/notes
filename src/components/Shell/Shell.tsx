@@ -1,19 +1,54 @@
+import { useDeferredValue, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { useCollection } from 'react-firebase-hooks/firestore';
 import { useAuthStateUser } from '../../context/AuthProvider';
 import { db } from '../../firebase';
 import { useDisclosure } from '@mantine/hooks';
-import { AppShell, ScrollArea, Burger, Group, Skeleton, Card, Text,Button } from '@mantine/core';
+import {
+  AppShell,
+  Burger,
+  Button,
+  Card,
+  CloseButton,
+  Group,
+  ScrollArea,
+  Skeleton,
+  Text,
+  Input,
+} from '@mantine/core';
 import { Header } from '../Header';
-
-import { useCollection } from 'react-firebase-hooks/firestore';
+import { Note } from '../types';
 
 export function Shell() {
   const [opened, { toggle }] = useDisclosure();
   const navigate = useNavigate();
+
   const [user] = useAuthStateUser();
   const uid = user!.uid;
+
   const [values, loading, error] = useCollection(collection(db, 'users', uid, 'notes'));
+  const notes = values?.docs.map((doc) => {
+    const data = doc.data() as Note;
+    return { id: doc.id, ...data };
+  });
+
+  const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
+  const [searchResult, setSearchResult] = useState<string[]>([]);
+
+  useEffect(() => {
+    const ids = notes?.filter((note) => {
+      if (note.header.toLocaleLowerCase().includes(deferredQuery)) {
+        return note;
+      }
+      if (note.text.toLocaleLowerCase().includes(deferredQuery)) {
+        return note;
+      }
+    }).map((note) => note.id) as string[];
+
+    setSearchResult(ids);
+  }, [deferredQuery]);
 
   const handleClick = (id: string) => () => {
     navigate(`/notes/${id}`);
@@ -35,6 +70,10 @@ export function Shell() {
     }
   }
 
+  const handleChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  }
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -42,9 +81,25 @@ export function Shell() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="flex-end">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Header />
+        <Group h="100%" px="md" justify="space-between">
+          <Input
+            placeholder='Поиск'
+            value={query}
+            onChange={handleChangeSearchQuery}
+            w={367}
+            rightSectionPointerEvents="all"
+            rightSection={
+              <CloseButton
+                aria-label="Clear input"
+                onClick={() => setQuery('')}
+                style={{ display: query ? undefined : 'none' }}
+              />
+            }
+          />
+          <Group>
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Header />
+          </Group>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
@@ -67,27 +122,49 @@ export function Shell() {
           </Button>
 
           {error && <strong>Error: {error.message}</strong>}
+
           {loading && Array(10)
             .fill(0)
             .map((_, index) => (
               <Skeleton key={index} h={65} mt="sm" animate={false} />
           ))}
-          {values && values.docs.map((doc) => (
+
+          {notes && !query && notes.map((note) => (
             <Card
-              key={doc.id}
+              key={note.id}
               withBorder
               px={15}
               py={10}
               mt="xs"
               shadow="sm"
               component="a"
-              onClick={handleClick(doc.id)}
+              onClick={handleClick(note.id)}
             >
-              <Text truncate="end" maw={300}>{doc.data().header}</Text>
-              <Text c="dimmed" size="sm">{new Date(doc.data().changed.seconds * 1000).toLocaleString()}</Text>
+              <Text truncate="end" maw={300}>{note.header}</Text>
+              <Text c="dimmed" size="sm">{new Date(note.changed.seconds * 1000).toLocaleString()}</Text>
             </Card>
-          ))
-          }
+          ))}
+
+          {notes && query && notes.map((note) => {
+            if (searchResult?.includes(note.id)) {
+              return (
+                <Card
+                  key={note.id}
+                  withBorder
+                  px={15}
+                  py={10}
+                  mt="xs"
+                  shadow="sm"
+                  component="a"
+                  onClick={handleClick(note.id)}
+                >
+                  <Text truncate="end" maw={300}>{note.header}</Text>
+                  <Text c="dimmed" size="sm">{new Date(note.changed.seconds * 1000).toLocaleString()}</Text>
+                </Card>
+            )}
+
+            return;
+          })}
         </ScrollArea>
       </AppShell.Navbar>
       <AppShell.Main>
