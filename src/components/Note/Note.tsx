@@ -27,6 +27,8 @@ export function Note() {
     await deleteDoc(doc(db, 'users', uid, 'notes', id as string));
   }
 
+  const createMarkup = (): string => marked.parse(value?.data()!.text) as string;
+
   return (
     <Paper shadow="sm" p="xl">
       {error && <strong>Error: {error.message}</strong>}
@@ -82,9 +84,9 @@ export function Note() {
               Удалить
             </Button>
           </Group>
-          <Text size="xl">{value?.data()!.header}</Text>
+          <Text truncate="end" size="xl">{value?.data()!.header}</Text>
           <Divider my="md" />
-          <div dangerouslySetInnerHTML={{__html: marked.parse(value?.data()!.text)}} />
+          <Text truncate="end" dangerouslySetInnerHTML={{ __html: createMarkup() }} />
         </>
       )}
     </Paper>

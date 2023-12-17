@@ -4,9 +4,9 @@ import { doc, collection, setDoc, Timestamp } from "firebase/firestore";
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase';
 import { useAuthStateUser } from '../../context/AuthProvider';
-
 import { Center, Loader, Paper, Stack, Textarea } from '@mantine/core';
 import { useFocusTrap } from '@mantine/hooks';
+import { Note } from '../types';
 
 export function EditNote() {
   const focusTrapRef = useFocusTrap();
@@ -23,7 +23,7 @@ export function EditNote() {
     setNoteText(value?.data()!.text)
   }, [value])
 
-  async function update(note) {
+  async function update(note: Note) {
     try {
       const docRef = doc(db, 'users', uid, 'notes', id as string);
       await setDoc(docRef, note);
