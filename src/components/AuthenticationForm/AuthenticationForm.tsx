@@ -16,7 +16,6 @@ import {
 } from '@mantine/core';
 import { useAuth, User } from '../../context/AuthProvider';
 import { GoogleButton } from './GoogleButton';
-// import { GitHubButton } from './GitHubButton';
 
 export function AuthenticationForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
@@ -73,7 +72,6 @@ export function AuthenticationForm(props: PaperProps) {
 
       <Group grow mb="md" mt="md">
         <GoogleButton radius="xl">Google</GoogleButton>
-        {/* <GitHubButton radius="xl">Twitter</GitHubButton> */}
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
