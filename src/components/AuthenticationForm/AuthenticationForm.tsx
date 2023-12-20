@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -14,16 +14,15 @@ import {
   Anchor,
   Stack,
 } from '@mantine/core';
-import { useAuth, User } from '../../context/AuthProvider';
+import { useAuth, User, useAuthStateUser } from '../../context/AuthProvider';
 import { GoogleButton } from './GoogleButton';
 
 export function AuthenticationForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
+  const [user] = useAuthStateUser();
 
   const auth = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
 
   const form = useForm({
     initialValues: {
@@ -42,15 +41,19 @@ export function AuthenticationForm(props: PaperProps) {
   function handleSubmit({ email, password }: User) {
     if (type === 'login') {
       auth.signin(email, password, () => {
-        navigate(from, { replace: true });
+        navigate('/', { replace: true });
       });
     }
 
     if (type === 'register') {
       auth.signup(email, password, () => {
-        navigate(from, { replace: true });
+        navigate('/', { replace: true });
       });
     }
+  }
+
+  if (user) {
+    navigate('/', { replace: true });
   }
 
   return (
